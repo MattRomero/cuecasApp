@@ -15,13 +15,14 @@ class PostList extends React.Component {
     }
     async componentDidMount() {
         let data;
-        data = await this.getUrl(`https://www.googleapis.com/blogger/v3/blogs/${blogID}/posts?key=${APIKey}`);
+        data = await this.getAllPosts(blogID,APIKey);
         this.setState({ data: data });
     }
 
 
-    getUrl = async (url) => {
-        let targetUrl = url;
+    getAllPosts = async (id,apikey) => {
+        let data = [];
+        let targetUrl = `https://www.googleapis.com/blogger/v3/blogs/${id}/posts?key=${apikey}`;
         let blob = await fetch(targetUrl);
         let data = await blob.json();
         return data;
