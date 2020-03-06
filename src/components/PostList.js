@@ -24,12 +24,15 @@ class PostList extends React.Component {
         let data = [];
         let targetUrl = `https://www.googleapis.com/blogger/v3/blogs/${id}/posts?key=${apikey}`;
         let blob = await fetch(targetUrl);
-        let data = await blob.json();
-        return data;
+        let items = await blob.json();
+        for (let item of items.items) {
+            data.push(item);
+        }
+        console.log(data)
+        return items;
     }
 
     render() {
-        console.log(this.state.data.items);
         if (this.state.data) {
             return (
                 <div>
