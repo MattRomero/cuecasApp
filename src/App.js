@@ -1,10 +1,10 @@
 import React from 'react';
 import './App.css';
-import PostList from './components/PostList.js';
+import Blog from './components/Blog.js';
 
 class App extends React.Component {
   render() {
-      return <PostList />
+      return <Blog />
   }
 }
 
