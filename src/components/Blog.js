@@ -20,7 +20,6 @@ class Blog extends React.Component {
         this.setState({ posts: data.posts });
     }
 
-
     getAllPosts = async (id,apikey, maxResults = 100, from = 1, to = null) => {
         let blog = {};
         blog.posts = [];
