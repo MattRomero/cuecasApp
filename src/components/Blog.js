@@ -19,66 +19,73 @@ class Blog extends React.Component {
     }
     async componentDidMount() {
         let data;
-        data = await this.getAllPosts(blogID,APIKey);
-        this.setState({ blogTitle: data.title, blogSubtitle: data.subtitle, numOfPosts: data.numOfPosts  });
+        data = await this.getAllPosts(blogID, APIKey);
+        this.setState({ blogTitle: data.title, blogSubtitle: data.subtitle, numOfPosts: data.numOfPosts });
         this.setState({ posts: data.posts });
     }
 
     // Get's all info of a blog
 
-    getAllPosts = async (id,apikey, maxResults = 100, from = 1, to = null) => {
+    getAllPosts = async (id, apikey, maxResults = 100, from = 1, to = null) => {
         let blog = {};
         blog.posts = [];
         let targetUrl = `https://cors-anywhere.herokuapp.com/https://www.blogger.com/feeds/${id}/posts/default/?key=${apikey}&max-results=1&start-index=1`;
 
         let blob = await fetch(targetUrl);
-        let xmlCuecas = await blob.text();
-        
-        let jsonCuecas = convert.xml2json(xmlCuecas, {compact: true});
-        jsonCuecas = JSON.parse(jsonCuecas);
-        
-        // Relevant info: json.title, json.subtitle, json['opensearch:totalResults']
-        jsonCuecas = jsonCuecas.feed;
-        blog.title = jsonCuecas.title._text;
-        blog.subtitle = jsonCuecas.subtitle._text;
-        blog.numOfPosts = jsonCuecas['openSearch:totalResults']._text;
+        let xmlBlog = await blob.text();
 
-        for (let item of jsonCuecas.entry) {
-            blog.posts.push(item)
-        }
-        
+        let jsonBlog = convert.xml2json(xmlBlog, { compact: true });
+        jsonBlog = JSON.parse(jsonBlog);
+
+        // Relevant info: json.title, json.subtitle, json['opensearch:totalResults']
+        jsonBlog = jsonBlog.feed;
+        blog.title = jsonBlog.title._text;
+        blog.subtitle = jsonBlog.subtitle._text;
+        blog.numOfPosts = parseInt(jsonBlog['openSearch:totalResults']._text);
+
+        if (!to) { to = blog.numOfPosts }
+
+        blog.posts = await this.getPosts(id,apikey,maxResults,from, to);
+
         return blog;
     }
 
-    getPosts = async (id,apikey, maxResults = 100, from = 1, to = null) => {
-        let targetUrl = `https://cors-anywhere.herokuapp.com/https://www.blogger.com/feeds/${id}/posts/default/?key=${apikey}&max-results=${maxResults}&start-index=${from}`;
-        let blob = await fetch(targetUrl);
-        let xmlCuecas = await blob.text();
-        
-        let jsonCuecas = convert.xml2json(xmlCuecas, {compact: true});
-        jsonCuecas = JSON.parse(jsonCuecas);
-        
-        jsonCuecas = jsonCuecas.feed.entry;
+    getPosts = async (id, apikey, maxResults, from, to) => {
+        let posts = [];
+        let numOfPages = Math.ceil(to/maxResults);
+        for (let i = 1; i <= numOfPages; i++) {
+            let targetUrl = `https://cors-anywhere.herokuapp.com/https://www.blogger.com/feeds/${id}/posts/default/?key=${apikey}&max-results=${maxResults}&start-index=${from}`;
+            let blob = await fetch(targetUrl);
+            let xmlPosts = await blob.text();
+    
+            let jsonPosts = JSON.parse(convert.xml2json(xmlPosts, { compact: true }));
+            jsonPosts = jsonPosts.feed.entry;
+   
+            for (let item of jsonPosts) {
+                posts.push(item)
+            }
+            from = from + maxResults;
+        }
+        return posts;
 
-        
     }
 
 
     render() {
         if (this.state.posts) {
             return (
-            <div>
-                <h1>{this.state.title}</h1>
-                <h2>{this.state.subtitle}</h2>
-                <PostList posts={this.state.posts} />
-            </div>
+                <div>
+                    <h1>{this.state.title}</h1>
+                    <h2>{this.state.subtitle}</h2>
+                    <PostList posts={this.state.posts} search={this.props.search} />
+                </div>
             );
         }
         else {
             return (
-            <div>
-                <img src='https://upload.wikimedia.org/wikipedia/commons/7/7a/Ajax_loader_metal_512.gif' width='50px' />
-            </div>
+                <div>
+                    <img src='https://upload.wikimedia.org/wikipedia/commons/7/7a/Ajax_loader_metal_512.gif' width='50px' />
+                </div>
             )
         }
     }
