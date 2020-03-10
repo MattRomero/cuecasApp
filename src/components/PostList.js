@@ -12,7 +12,7 @@ class PostList extends React.Component {
     render() {
         if (this.props.posts) {
             if (this.props.search) {
-                let cuecasFiltered = this.props.posts.filter(cueca => cueca.title._text.includes(this.props.search));
+                let cuecasFiltered = this.props.posts.filter(cueca => cueca.title._text.toLowerCase().includes(this.props.search.toLowerCase()));
                 return (
                     <div>
                         {cuecasFiltered.map(post => (
