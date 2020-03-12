@@ -77,14 +77,14 @@ class Blog extends React.Component {
                 <div>
                     <h1>{this.state.title}</h1>
                     <h2>{this.state.subtitle}</h2>
-                    <PostList posts={this.state.posts} search={this.props.search} />
+                    <PostList posts={this.state.posts} numOfPosts={this.state.numOfPosts} search={this.props.search} />
                 </div>
             );
         }
         else {
             return (
                 <div>
-                    <img src='https://upload.wikimedia.org/wikipedia/commons/7/7a/Ajax_loader_metal_512.gif' width='50px' />
+                    Cargando cuecas <img src='https://upload.wikimedia.org/wikipedia/commons/7/7a/Ajax_loader_metal_512.gif' width='25px' />
                 </div>
             )
         }

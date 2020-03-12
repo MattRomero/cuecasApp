@@ -1,5 +1,6 @@
 import React from 'react';
 import Post from './Post';
+import Table from 'react-bootstrap/Table';
 
 
 class PostList extends React.Component {
@@ -10,36 +11,25 @@ class PostList extends React.Component {
         }
     }
     render() {
-        if (this.props.posts) {
-            if (this.props.search) {
-                let cuecasFiltered = this.props.posts.filter(cueca => cueca.title._text.toLowerCase().includes(this.props.search.toLowerCase()));
+        if (this.props.search.length > 3) {
+            let cuecasFiltered = this.props.posts.filter(cueca => cueca.title._text.toLowerCase().includes(this.props.search.toLowerCase()));
+            if (cuecasFiltered.length > 0) {
                 return (
-                    <div>
+                    <Table bordered hover>
                         {cuecasFiltered.map(post => (
                             <Post title={post.title} />
                         ))}
-                    </div>
-                );        
-            }
-            else {
-                return (
-                    <div>
-                        {this.props.posts.map(post => (
-                            <Post title={post.title} />
-                        ))}
-                    </div>
+                    </Table>
                 );
             }
-
+            else { return <p>Tu búsqueda no dió ningún resultado</p> }
         }
         else {
             return (
-                <div>
-                    <img src='https://upload.wikimedia.org/wikipedia/commons/7/7a/Ajax_loader_metal_512.gif' width='50px' />
-                </div>
-            )
+                <p>Hay {this.props.numOfPosts} cuecas</p>
+            );
         }
     }
 }
 
-export default PostList;
+export default PostList; 
